@@ -1,0 +1,218 @@
+SECTION :1
+create table DEPT (
+DEPTNO int(2),
+DNAME varchar(15),
+LOC varchar(10));
+
+insert into DEPT values 
+(10,'ACCOUNTING','NEWYORK'),
+(20,'RESEARCH','DALLAS'),
+(30,'SALES','CHICAGO'),
+(40,'OPERATIONS','BOSTON');
+
+
+mysql> select * from DEPT;
++--------+------------+---------+
+| DEPTNO | DNAME      | LOC     |
++--------+------------+---------+
+|     10 | ACCOUNTING | NEWYORK |
+|     20 | RESEARCH   | DALLAS  |
+|     30 | SALES      | CHICAGO |
+|     40 | OPERATIONS | BOSTON  |
++--------+------------+---------+
+===================================================
+create table EMP (
+EMPNO int(4),
+ENMAE varchar(10),
+JOB varchar(9),
+HIREDATE date,
+SAL float(7,2),
+COMM float(7,2),
+DEPTNO int(2));
+
+insert into EMP values
+(7839,'KING','MANAGER','1991-11-17',5000,NULL,10),
+(7698,'BLAKE','CLERK','1981-05-01',2850,NULL,30),
+(7782,'CLARK','MANAGER','1981-06-09',2450,NULL,10),
+(7566,'JONES','CLERK','1981-04-02',2975,NULL,20),
+(7654,'MARTIN','SALESMAN','1981-09-28',1250,1400,30),
+(7499,'ALLEN','SALESMAN','1981-02-20',1600,300,30);
+
++-------+--------+----------+------------+---------+---------+--------+
+| EMPNO | ENMAE  | JOB      | HIREDATE   | SAL     | COMM    | DEPTNO |
++-------+--------+----------+------------+---------+---------+--------+
+|  7839 | KING   | MANAGER  | 1991-11-17 | 5000.00 |    NULL |     10 |
+|  7698 | BLAKE  | CLERK    | 1981-05-01 | 2850.00 |    NULL |     30 |
+|  7782 | CLARK  | MANAGER  | 1981-06-09 | 2450.00 |    NULL |     10 |
+|  7566 | JONES  | CLERK    | 1981-04-02 | 2975.00 |    NULL |     20 |
+|  7654 | MARTIN | SALESMAN | 1981-09-28 | 1250.00 | 1400.00 |     30 |
+|  7499 | ALLEN  | SALESMAN | 1981-02-20 | 1600.00 |  300.00 |     30 |
++-------+--------+----------+------------+---------+---------+--------+
+=========================================================
+select * from EMP
+where SAL between 2500 and 5000;
+
++-------+-------+---------+------------+---------+------+--------+
+| EMPNO | ENMAE | JOB     | HIREDATE   | SAL     | COMM | DEPTNO |
++-------+-------+---------+------------+---------+------+--------+
+|  7839 | KING  | MANAGER | 1991-11-17 | 5000.00 | NULL |     10 |
+|  7698 | BLAKE | CLERK   | 1981-05-01 | 2850.00 | NULL |     30 |
+|  7566 | JONES | CLERK   | 1981-04-02 | 2975.00 | NULL |     20 |
++-------+-------+---------+------------+---------+------+--------+
+
+------------------------------------------------------------------------------
+SELECT ENMAE FROM EMP ORDER BY ENMAE DESC;
++--------+
+| ENMAE  |
++--------+
+| MARTIN |
+| KING   |
+| JONES  |
+| CLARK  |
+| BLAKE  |
+| ALLEN  |
++--------+
+
+---------------------------------------------------------------------------------------
+select lower(JOB) from EMP;
++------------+
+| lower(JOB) |
++------------+
+| manager    |
+| clerk      |
+| manager    |
+| clerk      |
+| salesman   |
+| salesman   |
++------------+
+
+----------------------------------------------------
+select ENMAE, LEN(ENMAE) FROM EMP;
++--------+---------------+
+| ENMAE  | LENGTH(ENMAE) |
++--------+---------------+
+| KING   |             4 |
+| BLAKE  |             5 |
+| CLARK  |             5 |
+| JONES  |             5 |
+| MARTIN |             6 |
+| ALLEN  |             5 |
++--------+---------------+
+
+---------------------------------------------------
+select DEPTNO, COUNT(*) AS 'TOTAL EMPLOYEES' FROM EMP;
+-------+-----------------+
+| DEPTNO | TOTAL EMPLOYEES |
++--------+-----------------+
+|     10 |               6 |
++--------+-----------------+
+
+--------------------------------------------------------------------
+select DNAME, ENMAE from EMP JOIN DEPT ON 
+(EMP.DEPTNO=DEPT.DEPTNO);
++------------+--------+
+| DNAME      | ENMAE  |
++------------+--------+
+| ACCOUNTING | KING   |
+| SALES      | BLAKE  |
+| ACCOUNTING | CLARK  |
+| RESEARCH   | JONES  |
+| SALES      | MARTIN |
+| SALES      | ALLEN  |
++------------+--------+
+
+
+--------------------------------------------------------------------
+select instr(ENMAE, 'AR') as position from EMP;
++----------+
+| position |
++----------+
+|        0 |
+|        0 |
+|        3 |
+|        0 |
+|        2 |
+|        0 |
++----------+
+
+---------------------------------------------------------------------------------
+select ENMAE, SAL*0.2 AS HRA FROM EMP;
++--------+---------+
+| ENMAE  | HRA     |
++--------+---------+
+| KING   | 1000.00 |
+| BLAKE  |  570.00 |
+| CLARK  |  490.00 |
+| JONES  |  595.00 |
+| MARTIN |  250.00 |
+| ALLEN  |  320.00 |
++--------+---------+
+
+=====================================================================================
+SECTION :2
+
+create table tempp1 (
+string1 varchar(10),
+string2 varchar(20),
+is_exist char(4));
+
+delimiter //
+create procedure PROC1(str1 varchar(10), str2 varchar(20))
+begin
+declare s1 varchar(10);
+declare s2 varchar(20);
+select str1 into s1 from dual;
+select str2 into s2 from dual;
+if instr(s1,s2) or instr(s2,s1) then
+insert into tempp1 values(s1,s2,'YES');
+else
+insert into tempp1 values(s1,s2,'NO');
+end if;
+end; //
+delimiter ;
+
+call PROC1('SOPAN','OPAN');
+call PROC1('sonam','som');
+
+select * from tempp1;
++---------+---------+----------+
+| string1 | string2 | is_exist |
++---------+---------+----------+
+| SOPAN   | OPAN    | YES      |
+| sonam   | som     | NO       |
++---------+---------+----------+
+
+============================================================================================
+create table tempp2(triangle varchar(20));
+
+delimiter //
+create function Triangle2(x int, y int, z int)
+returns boolean
+deterministic
+begin
+if(x+y > z)and(y+z > x)and(x+z > y) then
+return true;
+else
+return false;
+end if;
+end; //
+delimiter ;
+
+delimiter //
+create procedure Triangle1(x int,y int, z int)
+begin
+declare pqr varchar(20);
+set pqr = Triangle2(x,y,z);
+insert into tempp2 values(pqr);
+end; //
+delimiter ;
+
+call Triangle1(2,3,4);
+select * from tempp2;
++----------+
+| triangle |
++----------+
+| 1        |
++----------+
+
+
